@@ -109,14 +109,17 @@ class wsdl extends nusoap_base {
 		            foreach ($xs->imports as $ns2 => $list2) {
 		                for ($ii = 0; $ii < count($list2); $ii++) {
 		                	if (! $list2[$ii]['loaded']) {
-		                		$this->schemas[$ns]->imports[$ns2][$ii]['loaded'] = true;
+		                		$this->schemas[$ns][$ns2]->imports[$ns2][$ii]['loaded'] = true;
 		                		$url = $list2[$ii]['location'];
 								if ($url != '') {
 									$urlparts = parse_url($url);
-									if (!isset($urlparts['host'])) {
+									if (!isset($urlparts['host']) && isset($wsdlparts['host'])) {
 										$url = $wsdlparts['scheme'] . '://' . $wsdlparts['host'] . (isset($wsdlparts['port']) ? ':' .$wsdlparts['port'] : '') .
 												substr($wsdlparts['path'],0,strrpos($wsdlparts['path'],'/') + 1) .$urlparts['path'];
 									}
+									else {
+									    $url = dirname($this->wsdl) . DS . $url;
+                                    }
 									if (! in_array($url, $imported_urls)) {
 					                	$this->parseWSDL($url);
 				                		$imported++;
